@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { toZonedTime } from 'date-fns-tz';
 import { withAuth } from '../middleware';
 
-const TIMEZONE = 'America/New_York';
+const TIMEZONE = 'Asia/Jakarta';
 const prisma = new PrismaClient();
 
 export async function GET() {
