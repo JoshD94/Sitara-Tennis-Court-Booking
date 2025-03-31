@@ -55,7 +55,6 @@ export async function POST(request: Request) {
 
             // Validate that bookings are only for next week same day
             const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
             const nextWeekSameDay = new Date(today);
             nextWeekSameDay.setDate(today.getDate() + 7); // Add 7 days to get next week
 
