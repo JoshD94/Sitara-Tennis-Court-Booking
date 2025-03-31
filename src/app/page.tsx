@@ -15,7 +15,7 @@ import AuthModal from './components/AuthModal';
 // Initialize the localizer for the calendar
 const localizer = momentLocalizer(moment);
 
-const TIMEZONE = 'Asia/Jakarta';
+const TIMEZONE = 'America/New_York';
 
 // Interface for bookings
 interface Booking {
