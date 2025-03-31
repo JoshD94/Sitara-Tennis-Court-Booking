@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String    @id @default(uuid())
+  email   String    @unique
+  password String
+  name    String?
+  address String?
+  authToken    String?
+  tokenExpiry  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bookings Booking[]
+  bookingQuota Int      @default(3) // Default booking quota for each user
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startTime DateTime
+  endTime   DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, startTime, endTime]) // Ensure no overlapping bookings for the same user
+}
