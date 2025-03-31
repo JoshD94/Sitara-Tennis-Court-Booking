@@ -107,7 +107,8 @@ export async function POST(request: Request) {
                 }
 
                 // Check if booking is between 6am and 9pm
-                const hours = slotDate.getHours();
+                const slotTimeInTimezone = toZonedTime(slotDate, TIMEZONE);
+                const hours = slotTimeInTimezone.getHours();
                 if (hours < 6 || hours >= 21) {
                     return NextResponse.json(
                         { error: 'Bookings must be between 6am and 9pm' },
