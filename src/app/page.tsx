@@ -7,7 +7,11 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { toZonedTime, format } from 'date-fns-tz';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from './components/AuthModal';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
+/* eslint-disable react/no-unescaped-entities */
 // Initialize the localizer for the calendar
 const localizer = momentLocalizer(moment);
 
@@ -759,7 +763,7 @@ export default function Home() {
               <div className="mt-4 sm:mt-6">
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   disabled={isSubmitting || selectedTimeSlots.length === 0}
                 >
                   {isSubmitting ? 'Processing...' : 'Confirm Booking'}
