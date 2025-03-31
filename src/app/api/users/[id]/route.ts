@@ -2,19 +2,26 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { validateToken } from '../../middleware';
 
+// Create Prisma client instance
+// Note: In production, you should use a singleton pattern to avoid too many connections
 const prisma = new PrismaClient();
 
 export async function GET(
     request: Request,
-    context: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
         // Get token from header
         const authHeader = request.headers.get('Authorization');
         const token = authHeader ? authHeader.split(' ')[1] : null;
 
-        // Get the user ID from the route
-        const { id } = context.params;
+        // Get the user ID from the route - in Next.js 15, params is a Promise that needs to be awaited
+        const params = await context.params;
+        const id = params.id;
+
+        if (!id) {
+            return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+        }
 
         // If token is provided, validate it
         if (token) {
