@@ -69,10 +69,40 @@ export async function POST(request: Request) {
             for (const slot of bookingSlots) {
                 const slotDate = new Date(slot.startTime);
 
-                // Check if booking is for next week same day
-                if (slotDate.getDay() !== dayOfWeek) {
+                // Create dates without time components, using the application timezone
+                const todayInTimezone = toZonedTime(new Date(), TIMEZONE);
+                const todayDate = new Date(todayInTimezone);
+                todayDate.setHours(0, 0, 0, 0);
+
+                // Convert the slot date to our timezone
+                const slotDateInTimezone = toZonedTime(slotDate, TIMEZONE);
+                const slotDateOnly = new Date(slotDateInTimezone);
+                slotDateOnly.setHours(0, 0, 0, 0);
+
+                // Calculate the expected date (7 days from today)
+                const nextWeekDate = new Date(todayDate);
+                nextWeekDate.setDate(todayDate.getDate() + 7);
+
+                // For debugging
+                console.log("Today (date only):", todayDate.toISOString());
+                console.log("Next week expected (date only):", nextWeekDate.toISOString());
+                console.log("Slot date (date only):", slotDateOnly.toISOString());
+
+                // Get day numbers
+                const dayOfWeekToday = todayDate.getDay();
+                const dayOfWeekSlot = slotDateOnly.getDay();
+                console.log("Day of week (today):", dayOfWeekToday);
+                console.log("Day of week (slot):", dayOfWeekSlot);
+
+                // Check if days match and it's approximately 7 days away
+                const diffTime = Math.abs(slotDateOnly.getTime() - todayDate.getTime());
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                console.log("Difference in days:", diffDays);
+
+                // Exact match required: same day of week AND 7 days difference
+                if (dayOfWeekToday !== dayOfWeekSlot || diffDays !== 7) {
                     return NextResponse.json(
-                        { error: 'Bookings must be for the same day next week' },
+                        { error: 'Bookings must be for exactly 7 days from today (same day next week)' },
                         { status: 400 }
                     );
                 }

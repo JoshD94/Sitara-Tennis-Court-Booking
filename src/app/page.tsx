@@ -117,11 +117,24 @@ export default function Home() {
   useEffect(() => {
     setIsLoading(true);
     fetchAllBookings().finally(() => {
-      // Set the next week same day as the default booking date
+      // Set the exact date 7 days from today, using the correct timezone
       const today = new Date();
-      const nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 7);
-      setBookingDate(nextWeek.toISOString().split('T')[0]);
+      
+      // Create a date in the application timezone
+      const todayInTimezone = toZonedTime(today, TIMEZONE);
+      
+      // Create next week date in same timezone
+      const nextWeek = new Date(todayInTimezone);
+      nextWeek.setDate(todayInTimezone.getDate() + 7);
+      
+      // Set to noon to avoid timezone issues
+      nextWeek.setHours(12, 0, 0, 0);
+      
+      // Format date to YYYY-MM-DD
+      const nextWeekFormatted = nextWeek.toISOString().split('T')[0];
+      console.log("Setting booking date to:", nextWeekFormatted);
+      
+      setBookingDate(nextWeekFormatted);
       setIsLoading(false);
     });
   }, []);
@@ -307,8 +320,13 @@ export default function Home() {
   const generateAvailableTimeSlots = () => {
     if (!bookingDate) return;
     
-    // Create date object for the selected date
-    const selectedDate = new Date(bookingDate);
+    // Create date object for the selected date using the app's timezone
+    const dateOnly = bookingDate.split('T')[0]; // Ensure we just have YYYY-MM-DD
+    console.log("Generating time slots for date:", dateOnly);
+    
+    // Parse the date in the correct timezone
+    const selectedDate = new Date(`${dateOnly}T12:00:00`);
+    console.log("Selected date object:", selectedDate.toISOString());
     
     // Generate all possible time slots from 6am to 9pm (last slot at 8pm)
     const slots: TimeSlot[] = [];
@@ -318,6 +336,8 @@ export default function Home() {
       
       const endTime = new Date(selectedDate);
       endTime.setHours(hour + selectedDuration, 0, 0, 0);
+      
+      console.log(`Generated slot: ${startTime.toISOString()} - ${endTime.toISOString()}`);
       
       // Check if this slot overlaps with any existing booking
       let isAvailable = true;
