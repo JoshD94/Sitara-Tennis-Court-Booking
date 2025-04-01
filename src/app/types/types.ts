@@ -122,4 +122,4 @@ export interface QuotaDisplayProps {
 }
 
 // Utility types
-export const TIMEZONE = 'America/New_York';
+export const TIMEZONE = 'Asia/Jakarta';

@@ -4,7 +4,7 @@ import { toZonedTime, format } from 'date-fns-tz';
 import { addDays } from 'date-fns';
 import { withAuth } from '../middleware';
 
-const TIMEZONE = 'America/New_York';
+const TIMEZONE = 'Asia/Jakarta';
 const prisma = new PrismaClient();
 
 export async function GET() {
