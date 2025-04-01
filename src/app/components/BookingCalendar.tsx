@@ -9,8 +9,10 @@ const localizer = momentLocalizer(moment);
 
 const BookingCalendar: React.FC<BookingCalendarProps> = ({ calendarEvents }) => {
   // Custom event styling
+  
+  // eslint-disable-next-line
   const eventStyleGetter = (event: any) => {
-    let style = {
+    const style = {
       backgroundColor: '#e6f2ff', // light blue for all bookings
       color: '#0066cc',
       border: '1px solid #99ccff',

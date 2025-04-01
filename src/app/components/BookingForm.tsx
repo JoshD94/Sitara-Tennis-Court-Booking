@@ -12,8 +12,11 @@ interface BookingFormProps {
   setBookingDate: (date: string) => void;
   selectedDuration: 1 | 2;
   setSelectedDuration: (duration: 1 | 2) => void;
+  // eslint-disable-next-line
   availableTimeSlots: any[];
+  // eslint-disable-next-line
   selectedTimeSlots: any[];
+  // eslint-disable-next-line
   addTimeSlot: (slot: any) => void;
   removeTimeSlot: (slotId: string) => void;
   userQuota: number;
@@ -47,8 +50,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
   // Calculate booking window times for display
   const getBookingWindowTimes = () => {
     return {
-      openTime: '6:00 pm',
-      closeTime: '11:59 pm'
+      openTime: "6:00 pm",
+      closeTime: "11:59 pm"
     };
   };
 
@@ -59,8 +62,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
     const nextWeek = addDays(today, 7);
     
     return {
-      minDate: format(tomorrow, 'yyyy-MM-dd'),
-      maxDate: format(nextWeek, 'yyyy-MM-dd')
+      minDate: format(tomorrow, "yyyy-MM-dd"),
+      maxDate: format(nextWeek, "yyyy-MM-dd")
     };
   };
 
@@ -156,7 +159,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                 className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 disabled={isSubmitting || selectedTimeSlots.length === 0}
               >
-                {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+                {isSubmitting ? "Processing..." : "Confirm Booking"}
               </button>
             </div>
           </form>

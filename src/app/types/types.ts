@@ -33,6 +33,7 @@ export interface CalendarEvent {
 }
 
 // Props interfaces for components
+// eslint-disable-next-line
 export interface LoadingSpinnerProps {
     // No props needed for basic spinner
 }
@@ -48,6 +49,7 @@ export interface BookingCalendarProps {
     calendarEvents: CalendarEvent[];
 }
 
+// eslint-disable-next-line
 export interface CalendarLegendProps {
     // No props needed for static legend
 }

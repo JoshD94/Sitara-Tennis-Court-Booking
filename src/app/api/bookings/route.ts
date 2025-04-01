@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { toZonedTime, format } from 'date-fns-tz';
-import { addDays } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { withAuth } from '../middleware';
 
 const TIMEZONE = 'Asia/Jakarta';

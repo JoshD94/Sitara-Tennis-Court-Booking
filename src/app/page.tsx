@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { toZonedTime, format } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { format as formatDate, addDays } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -35,6 +35,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [userQuota, setUserQuota] = useState(3); // Default quota
+  // eslint-disable-next-line
   const [usedQuota, setUsedQuota] = useState(0);
   const [isBookingWindowOpen, setIsBookingWindowOpen] = useState(false);
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
