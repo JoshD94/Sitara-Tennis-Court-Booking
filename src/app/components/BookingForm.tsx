@@ -88,7 +88,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Tennis Booking Quota System</h3>
               <p className="text-gray-700 mb-2 text-sm">
                 New members automatically receive a 3-hour weekly booking quota. 
-                You'll need to sign in to complete your booking, but you can browse available slots now.
+                You&apos;ll need to sign in to complete your booking, but you can browse available slots now.
               </p>
               <p className="text-gray-700 text-sm">
                 Your selections will be saved when you sign in during the booking process.
@@ -124,7 +124,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                   className="w-full p-2 border border-gray-300 rounded-md text-black"
                 />
                 <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                  Select any date from tomorrow until next {format(new Date(), 'EEEE')}
+                  Select any date from tomorrow until next {format(new Date(), "EEEE")}
                 </p>
               </div>
               

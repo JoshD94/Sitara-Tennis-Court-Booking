@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface BookingRulesProps {
   isAuthenticated: boolean;
@@ -20,9 +20,9 @@ const BookingRules: React.FC<BookingRulesProps> = ({
         {isAuthenticated && (
           <>
             <br />
-            <strong>This week's usage:</strong> You have used {currentWeekQuota} of your {userQuota} hour weekly quota (current week).
+            <strong>This week&apos;s usage:</strong> You have used {currentWeekQuota} of your {userQuota} hour weekly quota (current week).
             <br />
-            <strong>Next week's usage:</strong> You have used {nextWeekQuota} of your {userQuota} hour weekly quota (upcoming week).
+            <strong>Next week&apos;s usage:</strong> You have used {nextWeekQuota} of your {userQuota} hour weekly quota (upcoming week).
           </>
         )}
         {!isAuthenticated && (

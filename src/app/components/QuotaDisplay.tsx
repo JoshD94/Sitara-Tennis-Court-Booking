@@ -1,5 +1,5 @@
-import React from 'react';
-import { QuotaDisplayProps } from '../types/types';
+import React from "react";
+import { QuotaDisplayProps } from "../types/types";
 
 const QuotaDisplay: React.FC<QuotaDisplayProps> = ({ 
   selectedTimeSlots, 
@@ -14,7 +14,7 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
       <p className="text-gray-700 text-sm">
         Selected for Next Week: {selectedHours} hours
         <br />
-        Next Week's Remaining Quota: {remainingQuota} hours
+        Next Week&apos;s Remaining Quota: {remainingQuota} hours
       </p>
     </div>
   );
