@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { toZonedTime } from 'date-fns-tz';
+import { toZonedTime, format } from 'date-fns-tz';
+import { addDays } from 'date-fns';
 import { withAuth } from '../middleware';
 
 const TIMEZONE = 'America/New_York';
@@ -53,62 +54,49 @@ export async function POST(request: Request) {
                 );
             }
 
-            // Validate that bookings are only for next week same day
-            const today = new Date();
-            const nextWeekSameDay = new Date(today);
-            nextWeekSameDay.setDate(today.getDate() + 7); // Add 7 days to get next week
+            // Calculate the valid booking range: from tomorrow to 7 days from today
+            const todayInTimezone = toZonedTime(new Date(), TIMEZONE);
+            const tomorrow = new Date(todayInTimezone);
+            tomorrow.setDate(todayInTimezone.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
 
-            // Get the start and end of the week (Sunday to Saturday)
-            const startOfWeek = new Date(nextWeekSameDay);
-            startOfWeek.setDate(nextWeekSameDay.getDate() - nextWeekSameDay.getDay()); // Start of week (Sunday)
+            const nextWeekSameDay = new Date(todayInTimezone);
+            nextWeekSameDay.setDate(todayInTimezone.getDate() + 7);
+            nextWeekSameDay.setHours(23, 59, 59, 999); // End of next week same day
+
+            // Calculate weekly quota period (Sunday to Saturday)
+            const dayOfWeek = todayInTimezone.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+            // Find the most recent Sunday (start of current week)
+            const startOfWeek = new Date(todayInTimezone);
+            startOfWeek.setDate(todayInTimezone.getDate() - dayOfWeek); // Move back to Sunday
+            startOfWeek.setHours(0, 0, 0, 0); // Start of day
+
+            // End of week is Saturday
             const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of week (Saturday)
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+            endOfWeek.setHours(23, 59, 59, 999); // End of day
 
-            // Check if all booking slots are for the same day next week
+            // Check if booking slots are within the allowed date range
             for (const slot of bookingSlots) {
                 const slotDate = new Date(slot.startTime);
-
-                // Create dates without time components, using the application timezone
-                const todayInTimezone = toZonedTime(new Date(), TIMEZONE);
-                const todayDate = new Date(todayInTimezone);
-                todayDate.setHours(0, 0, 0, 0);
-
-                // Convert the slot date to our timezone
                 const slotDateInTimezone = toZonedTime(slotDate, TIMEZONE);
-                const slotDateOnly = new Date(slotDateInTimezone);
-                slotDateOnly.setHours(0, 0, 0, 0);
-
-                // Calculate the expected date (7 days from today)
-                const nextWeekDate = new Date(todayDate);
-                nextWeekDate.setDate(todayDate.getDate() + 7);
 
                 // For debugging
-                console.log("Today (date only):", todayDate.toISOString());
-                console.log("Next week expected (date only):", nextWeekDate.toISOString());
-                console.log("Slot date (date only):", slotDateOnly.toISOString());
+                console.log("Tomorrow (min date):", tomorrow.toISOString());
+                console.log("Next week (max date):", nextWeekSameDay.toISOString());
+                console.log("Slot date:", slotDateInTimezone.toISOString());
 
-                // Get day numbers
-                const dayOfWeekToday = todayDate.getDay();
-                const dayOfWeekSlot = slotDateOnly.getDay();
-                console.log("Day of week (today):", dayOfWeekToday);
-                console.log("Day of week (slot):", dayOfWeekSlot);
-
-                // Check if days match and it's approximately 7 days away
-                const diffTime = Math.abs(slotDateOnly.getTime() - todayDate.getTime());
-                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                console.log("Difference in days:", diffDays);
-
-                // Exact match required: same day of week AND 7 days difference
-                if (dayOfWeekToday !== dayOfWeekSlot || diffDays !== 7) {
+                // Check if booking date is within the allowed range
+                if (slotDateInTimezone < tomorrow || slotDateInTimezone > nextWeekSameDay) {
                     return NextResponse.json(
-                        { error: 'Bookings must be for exactly 7 days from today (same day next week)' },
+                        { error: 'Bookings must be between tomorrow and 7 days from today' },
                         { status: 400 }
                     );
                 }
 
                 // Check if booking is between 6am and 9pm
-                const slotTimeInTimezone = toZonedTime(slotDate, TIMEZONE);
-                const hours = slotTimeInTimezone.getHours();
+                const hours = slotDateInTimezone.getHours();
                 if (hours < 6 || hours >= 21) {
                     return NextResponse.json(
                         { error: 'Bookings must be between 6am and 9pm' },
@@ -182,33 +170,51 @@ export async function POST(request: Request) {
                 );
             }
 
-            // Check for overlapping bookings
-            const startOfDay = new Date(new Date(bookingSlots[0].startTime).setHours(0, 0, 0, 0));
-            const endOfDay = new Date(new Date(bookingSlots[0].startTime).setHours(23, 59, 59, 999));
-
-            const allBookingsForDay = await prisma.booking.findMany({
-                where: {
-                    startTime: {
-                        gte: startOfDay,
-                        lt: endOfDay
-                    }
-                }
-            });
+            // Check for overlapping bookings with unique days
+            const bookingDays = new Map();
 
             for (const slot of bookingSlots) {
-                const slotStart = new Date(slot.startTime);
-                const slotEnd = new Date(slot.endTime);
+                const slotStartTime = new Date(slot.startTime);
+                const slotEndTime = new Date(slot.endTime);
+
+                // Get date string for this booking day
+                const slotDateStr = slotStartTime.toISOString().split('T')[0];
+
+                // If we haven't processed this day yet, check for overlaps
+                if (!bookingDays.has(slotDateStr)) {
+                    const startOfDay = new Date(slotStartTime);
+                    startOfDay.setHours(0, 0, 0, 0);
+
+                    const endOfDay = new Date(slotStartTime);
+                    endOfDay.setHours(23, 59, 59, 999);
+
+                    // Get all existing bookings for this day
+                    const existingDayBookings = await prisma.booking.findMany({
+                        where: {
+                            startTime: {
+                                gte: startOfDay,
+                                lt: endOfDay
+                            }
+                        }
+                    });
+
+                    // Store this day's bookings
+                    bookingDays.set(slotDateStr, existingDayBookings);
+                }
+
+                // Get existing bookings for this day
+                const existingDayBookings = bookingDays.get(slotDateStr);
 
                 // Check against existing bookings
-                for (const existingBooking of allBookingsForDay) {
+                for (const existingBooking of existingDayBookings) {
                     const existingStart = existingBooking.startTime;
                     const existingEnd = existingBooking.endTime;
 
                     // Check if there's overlap
                     if (
-                        (slotStart >= existingStart && slotStart < existingEnd) ||
-                        (slotEnd > existingStart && slotEnd <= existingEnd) ||
-                        (slotStart <= existingStart && slotEnd >= existingEnd)
+                        (slotStartTime >= existingStart && slotStartTime < existingEnd) ||
+                        (slotEndTime > existingStart && slotEndTime <= existingEnd) ||
+                        (slotStartTime <= existingStart && slotEndTime >= existingEnd)
                     ) {
                         return NextResponse.json(
                             { error: 'Selected time slot overlaps with an existing booking' },
@@ -217,17 +223,22 @@ export async function POST(request: Request) {
                     }
                 }
 
-                // Check against other slots in this request
+                // Check against other slots in this request for the same day
                 for (const otherSlot of bookingSlots) {
                     if (slot === otherSlot) continue;
 
-                    const otherStart = new Date(otherSlot.startTime);
-                    const otherEnd = new Date(otherSlot.endTime);
+                    const otherStartTime = new Date(otherSlot.startTime);
+                    const otherDateStr = otherStartTime.toISOString().split('T')[0];
+
+                    // Only check overlaps for slots on the same day
+                    if (slotDateStr !== otherDateStr) continue;
+
+                    const otherEndTime = new Date(otherSlot.endTime);
 
                     if (
-                        (slotStart >= otherStart && slotStart < otherEnd) ||
-                        (slotEnd > otherStart && slotEnd <= otherEnd) ||
-                        (slotStart <= otherStart && slotEnd >= otherEnd)
+                        (slotStartTime >= otherStartTime && slotStartTime < otherEndTime) ||
+                        (slotEndTime > otherStartTime && slotEndTime <= otherEndTime) ||
+                        (slotStartTime <= otherStartTime && slotEndTime >= otherEndTime)
                     ) {
                         return NextResponse.json(
                             { error: 'Selected time slots overlap with each other' },

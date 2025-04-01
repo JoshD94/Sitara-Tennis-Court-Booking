@@ -39,7 +39,7 @@ export async function withAuth(request: Request, handler: (userId: string, req: 
         const user = await validateToken(token);
 
         if (!user) {
-            return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+            return NextResponse.json({ error: 'Invalid or expired token: please retry logging in' }, { status: 401 });
         }
 
         // Call the handler with the authenticated user ID

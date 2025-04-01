@@ -37,7 +37,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       
       // Don't close modal yet for new users so they can see the message
       if (!result.isNewUser) {
+        // For returning users, close modal and reload page
         onClose();
+        window.location.reload();
       }
     } catch (error) {
       console.error('Auth error:', error);
@@ -45,6 +47,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Function to handle continuation after new user creation
+  const handleContinue = () => {
+    onClose();
+    // Reload the page to reset all state
+    window.location.reload();
   };
 
   return (
@@ -123,7 +132,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {isNewUser === true && (
           <div className="mt-4 text-center">
             <button
-              onClick={onClose}
+              onClick={handleContinue}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
               Continue to Booking
