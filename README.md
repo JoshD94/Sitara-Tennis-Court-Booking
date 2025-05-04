@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sitara Tennis Court Booking System
 
-## Getting Started
+A comprehensive web application for booking tennis courts at the Sitara residential complex. This system allows residents to book tennis courts up to a week in advance through an intuitive user interface.
 
-First, run the development server:
+## 🎾 Project Overview
+
+The Sitara Tennis Court Booking System is designed to streamline the court reservation process for residents. Users can view court availability, make bookings within their weekly quota, and manage their upcoming reservations, all within a simple web interface.
+
+## 📸 Screenshots
+
+![Main Calendar View](public/calendar.png)
+*Main calendar view showing all bookings*
+
+![Booking Interface](public/booking.png)
+*Booking interface with time slot selection*
+
+## ✨ Features
+
+- **Interactive Calendar**: View all existing bookings in a calendar format
+- **Time Slot Selection**: Book courts in 1-hour or 2-hour increments
+- **Quota Management**: Each user has a weekly booking quota (default: 3 hours)
+- **Booking Window**: Bookings are open from 6pm to midnight each day
+- **Date Range Restriction**: Book courts from tomorrow up to a week in advance
+- **User Authentication**: Secure login system for residents
+- **Upcoming Bookings**: View and manage your upcoming reservations
+- **Responsive Design**: Works seamlessly on both desktop and mobile devices
+- **Real-time Availability**: Instantly see which time slots are available
+- **Analytics**: Track court usage patterns (admin feature)
+
+## 🛠️ Tech Stack
+
+- **Frontend**:
+  - [Next.js 15](https://nextjs.org/) - React framework
+  - [React 19](https://react.dev/) - UI library
+  - [TailwindCSS 4](https://tailwindcss.com/) - Utility-first CSS framework
+  - [React Big Calendar](https://github.com/jquense/react-big-calendar) - Calendar component
+
+- **Backend**:
+  - [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction) - API implementation
+  - [Prisma 6](https://www.prisma.io/) - ORM for database access
+  - [PostgreSQL](https://www.postgresql.org/) - Database
+
+- **Authentication**:
+  - Custom JWT-based authentication system
+  - Secure password handling with bcrypt
+
+- **Time Handling**:
+  - [date-fns-tz](https://github.com/marnusw/date-fns-tz) - Timezone support
+  - [Moment.js](https://momentjs.com/) - Date manipulation
+
+- **Analytics**:
+  - [Vercel Analytics](https://vercel.com/analytics) - Usage tracking
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or newer)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [PostgreSQL](https://www.postgresql.org/) database
+
+### Environment Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/sitara-tennis-court-booking.git
+   cd sitara-tennis-court-booking
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/tennis_booking"
+   JWT_SECRET="your-jwt-secret-key"
+   ```
+
+4. Set up the database:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+### Running the Application
+
+1. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+2. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## 📝 Database Schema
+
+The application uses two main data models:
+
+1. **User**:
+   - Stores resident information and authentication details
+   - Includes booking quota configuration
+   - Tracks created bookings
+
+2. **Booking**:
+   - Stores court reservation details
+   - Linked to users for ownership tracking
+   - Includes start and end times for reservations
+
+## 🧪 Testing
 
 ```bash
-npm run dev
+npm test
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌐 Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application is optimized for deployment on [Vercel](https://vercel.com/), but can be deployed to any platform that supports Next.js.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push your code to a Git repository
+2. Connect your repository to Vercel
+3. Configure environment variables
+4. Deploy!
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Deploy on Vercel
+## 🙏 Acknowledgements
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Thanks to all the residents of Sitara for their feedback and support
+- Special thanks to the Sitara management for supporting this digital initiative
